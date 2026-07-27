@@ -25,25 +25,25 @@ const CalendarView = () => {
     <div className="space-y-8">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">Haftalık Takvim</h1>
-          <p className="text-muted-foreground mt-1">Randevuları haftalık görünümde inceleyin ve yönetin.</p>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Haftalık Takvim</h1>
+          <p className="text-sm sm:text-base text-muted-foreground mt-1">Randevuları haftalık görünümde inceleyin ve yönetin.</p>
         </div>
-        <div className="flex items-center space-x-3 bg-white border border-border/60 shadow-sm rounded-xl p-1.5">
-          <Button variant="ghost" className="rounded-lg h-10 px-3 hover:bg-secondary/50" onClick={prevWeek}>
-            <ChevronLeft className="h-5 w-5 mr-1" /> Önceki
+        <div className="flex items-center justify-between sm:justify-start w-full sm:w-auto bg-white border border-border/60 shadow-sm rounded-xl p-1.5">
+          <Button variant="ghost" className="rounded-lg h-10 px-2 sm:px-3 hover:bg-secondary/50" onClick={prevWeek}>
+            <ChevronLeft className="h-5 w-5 sm:mr-1" /> <span className="hidden sm:inline">Önceki</span>
           </Button>
-          <div className="text-base font-bold px-4 py-2 bg-secondary/30 rounded-lg min-w-[160px] text-center">
+          <div className="text-sm sm:text-base font-bold px-2 sm:px-4 py-2 bg-secondary/30 rounded-lg min-w-[120px] sm:min-w-[160px] text-center flex-1 sm:flex-none">
             {format(weekStart, 'MMMM yyyy', { locale: tr })}
           </div>
-          <Button variant="ghost" className="rounded-lg h-10 px-3 hover:bg-secondary/50" onClick={nextWeek}>
-            Sonraki <ChevronRight className="h-5 w-5 ml-1" />
+          <Button variant="ghost" className="rounded-lg h-10 px-2 sm:px-3 hover:bg-secondary/50" onClick={nextWeek}>
+            <span className="hidden sm:inline">Sonraki</span> <ChevronRight className="h-5 w-5 sm:ml-1" />
           </Button>
         </div>
       </div>
 
-      <Card>
-        <CardContent className="p-0 overflow-auto max-h-[700px] relative">
-          <div className="min-w-[800px]">
+      <Card className="border-0 sm:border border-border/60 shadow-none sm:shadow-sm rounded-none sm:rounded-xl">
+        <CardContent className="p-0 overflow-x-auto max-h-[700px] relative scroll-smooth" style={{ WebkitOverflowScrolling: 'touch' }}>
+          <div className="min-w-[900px]">
             <div className="grid grid-cols-8 border-b sticky top-0 bg-white z-10 shadow-sm">
               <div className="p-4 border-r bg-secondary/30 flex items-center justify-center">
                 <span className="text-sm font-medium text-muted-foreground">Saat</span>

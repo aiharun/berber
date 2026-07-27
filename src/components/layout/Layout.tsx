@@ -13,15 +13,15 @@ const Layout = () => {
   return (
     <div className="min-h-screen flex flex-col font-sans">
       <header className="w-full bg-white border-b border-stone-200">
-        <div className="container mx-auto px-6 h-24 flex items-center justify-between">
+        <div className="container mx-auto px-4 sm:px-6 h-20 sm:h-24 flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3 group">
             <div className="w-12 h-12 bg-stone-900 rounded-none flex items-center justify-center transform group-hover:rotate-12 transition-transform duration-500">
               <Scissors className="h-6 w-6 text-white" />
             </div>
             <div className="flex flex-col">
-              <span className="text-2xl font-black tracking-widest text-stone-900 uppercase leading-none">Luxe<span className="text-amber-600">Barber</span></span>
-              <span className="text-[10px] font-bold text-stone-500 tracking-[0.2em] uppercase mt-1">Premium Grooming</span>
+              <span className="text-xl sm:text-2xl font-black tracking-widest text-stone-900 uppercase leading-none">Luxe<span className="text-amber-600">Barber</span></span>
+              <span className="text-[9px] sm:text-[10px] font-bold text-stone-500 tracking-[0.2em] uppercase mt-1">Premium Grooming</span>
             </div>
           </Link>
 

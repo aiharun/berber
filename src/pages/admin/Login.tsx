@@ -230,7 +230,9 @@ const Login = () => {
                   <Lock className="absolute left-4 top-3.5 h-5 w-5 text-muted-foreground" />
                   <Input 
                     id="pin" 
-                    type="password" 
+                    type="password"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                     maxLength={6}
                     placeholder="******"
                     className="pl-12 rounded-xl border-border py-6 text-2xl tracking-[0.5em] text-center focus-visible:ring-gold-500 focus-visible:ring-1 transition-shadow bg-secondary/20 font-mono"
