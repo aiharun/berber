@@ -20,7 +20,7 @@ const Layout = () => {
               <Scissors className="h-6 w-6 text-white" />
             </div>
             <div className="flex flex-col">
-              <span className="text-xl sm:text-2xl font-black tracking-widest text-stone-900 uppercase leading-none">Luxe<span className="text-amber-600">Barber</span></span>
+              <span className="text-xl sm:text-2xl font-black tracking-widest text-stone-900 uppercase leading-none">Wid<span className="text-amber-600">Ber</span></span>
               <span className="text-[9px] sm:text-[10px] font-bold text-stone-500 tracking-[0.2em] uppercase mt-1">Premium Grooming</span>
             </div>
           </Link>
@@ -84,7 +84,7 @@ const Layout = () => {
       <footer className="border-t border-border bg-white py-6 md:py-0">
         <div className="container mx-auto flex flex-col items-center justify-between gap-4 md:h-24 md:flex-row px-4 text-sm font-medium text-muted-foreground">
           <p>
-            &copy; {new Date().getFullYear()} LuxeBarber. Tüm hakları saklıdır.
+            &copy; {new Date().getFullYear()} WidBer. Tüm hakları saklıdır.
           </p>
         </div>
       </footer>

@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [staffBarber, setStaffBarber] = useState<{ id: string, name: string } | null>(null);
 
   const checkStaffBarber = async (currentUser: User | null) => {
-    const adminEmail = import.meta.env.VITE_ADMIN_EMAIL || 'admin@luxebarber.com';
+    const adminEmail = import.meta.env.VITE_ADMIN_EMAIL || 'admin@widber.com';
     if (currentUser && currentUser.email !== adminEmail) {
       const staffId = localStorage.getItem('staff_barber_id');
       if (staffId) {
@@ -58,7 +58,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     await supabase.auth.signOut();
   };
 
-  const adminEmail = import.meta.env.VITE_ADMIN_EMAIL || 'admin@luxebarber.com';
+  const adminEmail = import.meta.env.VITE_ADMIN_EMAIL || 'admin@widber.com';
   const isAdmin = user?.email === adminEmail;
 
   return (
