@@ -159,7 +159,7 @@ export const QuickBookingWidget: React.FC<QuickBookingWidgetProps> = ({ onComple
             </div>
             <div className="flex flex-col overflow-hidden">
               <span className={cn("text-[11px] font-semibold uppercase tracking-wide", activePopover === 'date' ? 'text-gray-300' : 'text-gray-500')}>Tarih</span>
-              <span className="text-[13px] font-medium truncate">{selectedDate ? format(new Date(selectedDate), 'dd MMM') : 'Seçiniz'}</span>
+              <span className="text-[13px] font-medium truncate">{selectedDate ? format(new Date(selectedDate), 'dd MMM', { locale: tr }) : 'Seçiniz'}</span>
             </div>
           </button>
           
