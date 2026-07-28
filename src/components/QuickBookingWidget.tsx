@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar as CalendarIcon, Clock, Scissors, User, ArrowRight, Loader2, AlertCircle } from 'lucide-react';
+import { Calendar as CalendarIcon, Clock, Scissors, User, ArrowRight, Loader2, AlertCircle, Check } from 'lucide-react';
 import { format, addDays, isToday, parse } from 'date-fns';
 import { tr } from 'date-fns/locale';
 import { useSupabaseData } from '../hooks/useSupabaseData';
@@ -20,12 +20,12 @@ export const QuickBookingWidget: React.FC<QuickBookingWidgetProps> = ({ onComple
   const widgetRef = useRef<HTMLDivElement>(null);
 
   // Local selections mapped to Context
-  const selectedService = appointment.services[0] || null;
+  const selectedServiceText = appointment.services.length > 0 ? (appointment.services.length === 1 ? appointment.services[0].name : `${appointment.services.length} Hizmet`) : 'Seçiniz';
   const selectedBarber = appointment.barber || null;
   const selectedDate = appointment.date ? format(appointment.date, 'yyyy-MM-dd') : null;
   const selectedTime = appointment.time || null;
 
-  const totalDuration = selectedService ? selectedService.duration : 0;
+  const totalDuration = appointment.services.reduce((acc, curr) => acc + curr.duration, 0);
   
   const { bookedTimes, fetchingTimes } = useAvailableTimes(
     selectedDate || '', 
@@ -48,11 +48,11 @@ export const QuickBookingWidget: React.FC<QuickBookingWidgetProps> = ({ onComple
   }, []);
 
   const handleNext = () => {
-    if (selectedService && selectedBarber && selectedDate && selectedTime) {
+    if (appointment.services.length > 0 && selectedBarber && selectedDate && selectedTime) {
       onComplete(); // Opens the modal for Contact Info
     } else {
       // Auto open next missing step
-      if (!selectedService) setActivePopover('service');
+      if (appointment.services.length === 0) setActivePopover('service');
       else if (!selectedBarber) setActivePopover('barber');
       else if (!selectedDate) setActivePopover('date');
       else if (!selectedTime) setActivePopover('time');
@@ -79,7 +79,7 @@ export const QuickBookingWidget: React.FC<QuickBookingWidgetProps> = ({ onComple
             </div>
             <div className="flex flex-col overflow-hidden">
               <span className={cn("text-[11px] font-semibold uppercase tracking-wide", activePopover === 'service' ? 'text-gray-300' : 'text-gray-500')}>Hizmet</span>
-              <span className="text-[13px] font-medium truncate">{selectedService ? selectedService.name : 'Seçiniz'}</span>
+              <span className="text-[13px] font-medium truncate">{selectedServiceText}</span>
             </div>
           </button>
           
@@ -87,12 +87,30 @@ export const QuickBookingWidget: React.FC<QuickBookingWidgetProps> = ({ onComple
             {activePopover === 'service' && (
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="absolute top-full left-0 w-64 mt-2 p-2 bg-white rounded-2xl shadow-xl border border-black/5 z-50">
                 <div className="max-h-64 overflow-y-auto space-y-1 pr-1">
-                  {services.map(srv => (
-                    <button key={srv.id} onClick={() => { setServices([srv]); setActivePopover('barber'); }} className="w-full text-left p-3 rounded-xl hover:bg-gray-50 flex justify-between items-center transition-colors">
-                      <span className="font-medium text-sm text-gray-800">{srv.name}</span>
-                      <span className="text-xs text-gray-400 font-semibold">{srv.duration} Dk</span>
-                    </button>
-                  ))}
+                  {services.map(srv => {
+                    const isSelected = appointment.services.some(s => s.id === srv.id);
+                    return (
+                      <button 
+                        key={srv.id} 
+                        onClick={() => { 
+                          if (isSelected) {
+                            setServices(appointment.services.filter(s => s.id !== srv.id));
+                          } else {
+                            setServices([...appointment.services, srv]);
+                          }
+                        }} 
+                        className={cn("w-full text-left p-3 rounded-xl flex justify-between items-center transition-colors", isSelected ? "bg-black/5" : "hover:bg-gray-50")}
+                      >
+                        <span className="font-medium text-sm text-gray-800 flex items-center gap-3">
+                          <div className={cn("w-4 h-4 rounded border flex items-center justify-center transition-colors", isSelected ? "bg-black border-black text-white" : "border-gray-300 bg-white")}>
+                            {isSelected && <Check className="w-3 h-3" />}
+                          </div>
+                          {srv.name}
+                        </span>
+                        <span className="text-xs text-gray-400 font-semibold">{srv.duration} Dk</span>
+                      </button>
+                    );
+                  })}
                 </div>
               </motion.div>
             )}
@@ -147,15 +165,16 @@ export const QuickBookingWidget: React.FC<QuickBookingWidgetProps> = ({ onComple
           
           <AnimatePresence>
             {activePopover === 'date' && (
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="absolute top-full left-1/2 -translate-x-1/2 md:left-0 md:translate-x-0 w-[280px] mt-2 p-3 bg-white rounded-2xl shadow-xl border border-black/5 z-50">
-                <div className="grid grid-cols-4 gap-2">
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="absolute top-full left-1/2 -translate-x-1/2 md:left-0 md:translate-x-0 w-[320px] md:w-[400px] mt-2 p-3 bg-white rounded-2xl shadow-xl border border-black/5 z-50">
+                <div className="flex overflow-x-auto space-x-2 pb-2 [&::-webkit-scrollbar]:hidden scroll-smooth snap-x">
                   {availableDates.map(date => {
                     const dateStr = format(date, 'yyyy-MM-dd');
                     const isSel = selectedDate === dateStr;
                     return (
-                      <button key={dateStr} onClick={() => { setDateTime(date, ''); setActivePopover('time'); }} className={cn("flex flex-col items-center p-2 rounded-xl border transition-all text-center", isSel ? "border-black bg-black text-white" : "border-black/5 hover:border-black/20")}>
+                      <button key={dateStr} onClick={() => { setDateTime(date, ''); setActivePopover('time'); }} className={cn("snap-center flex-shrink-0 flex flex-col items-center justify-center p-3 rounded-xl border transition-all min-w-[75px]", isSel ? "border-black bg-black text-white shadow-md" : "border-black/5 hover:border-black/20 bg-[#FAFAFA]")}>
                         <span className="text-[10px] uppercase opacity-70 mb-1">{format(date, 'EEE', { locale: tr })}</span>
-                        <span className="text-lg font-bold leading-none">{format(date, 'd')}</span>
+                        <span className="text-xl font-bold leading-none">{format(date, 'd')}</span>
+                        <span className="text-[9px] uppercase mt-1 opacity-70">{format(date, 'MMM', { locale: tr })}</span>
                       </button>
                     );
                   })}
@@ -222,12 +241,12 @@ export const QuickBookingWidget: React.FC<QuickBookingWidgetProps> = ({ onComple
       <button 
         onClick={handleNext} 
         className={cn("w-full md:w-auto mt-2 md:mt-0 md:ml-2 h-14 md:h-[68px] md:w-[68px] rounded-2xl flex items-center justify-center transition-all shadow-sm group", 
-          (selectedService && selectedBarber && selectedDate && selectedTime) 
+          (appointment.services.length > 0 && selectedBarber && selectedDate && selectedTime) 
           ? "bg-black text-white hover:scale-105 active:scale-95" 
           : "bg-gray-200 text-gray-400"
         )}
       >
-        <ArrowRight className={cn("w-6 h-6", (selectedService && selectedBarber && selectedDate && selectedTime) ? "group-hover:translate-x-1 transition-transform" : "")} />
+        <ArrowRight className={cn("w-6 h-6", (appointment.services.length > 0 && selectedBarber && selectedDate && selectedTime) ? "group-hover:translate-x-1 transition-transform" : "")} />
       </button>
 
     </div>
