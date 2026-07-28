@@ -10,13 +10,17 @@ import { Loader2 } from 'lucide-react';
 
 const CalendarView = () => {
   const { appointments, loading: appointmentsLoading } = useAdminAppointments();
-  const { workingHours, loading: hoursLoading } = useSupabaseData();
   const [currentDate, setCurrentDate] = useState(new Date());
 
   const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 });
   const weekDays = Array.from({ length: 7 }).map((_, i) => addDays(weekStart, i));
 
-  const timeSlots = workingHours.length > 0 ? workingHours : ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00"];
+  // Create 30-min intervals from 09:00 to 23:30
+  const timeSlots = Array.from({ length: 30 }).map((_, i) => {
+    const hours = Math.floor(i / 2) + 9;
+    const minutes = i % 2 === 0 ? "00" : "30";
+    return `${hours.toString().padStart(2, '0')}:${minutes}`;
+  });
 
   const prevWeek = () => setCurrentDate(addDays(currentDate, -7));
   const nextWeek = () => setCurrentDate(addDays(currentDate, 7));
@@ -58,7 +62,7 @@ const CalendarView = () => {
               ))}
             </div>
             
-            {(appointmentsLoading || hoursLoading) ? (
+            {appointmentsLoading ? (
               <div className="flex items-center justify-center h-[500px]">
                 <Loader2 className="w-8 h-8 animate-spin text-gold-500" />
               </div>
