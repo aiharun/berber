@@ -593,9 +593,18 @@ const BookingWizard = () => {
 
                               if (!hasAvailableSlots && !fetchingTimes) {
                                 return (
-                                  <div className="text-center py-8 font-semibold text-red-500 bg-red-50 rounded-xl border border-red-100 flex flex-col items-center gap-2">
-                                    <AlertCircle className="w-8 h-8 opacity-80" />
-                                    <span>Personel bu tarihte tamamen doludur veya izinlidir.</span>
+                                  <div className="space-y-4">
+                                    <div className="text-center py-4 font-semibold text-red-500 bg-red-50 rounded-xl border border-red-100 flex flex-col items-center gap-2">
+                                      <AlertCircle className="w-6 h-6 opacity-80" />
+                                      <span className="text-sm">Personel bu tarihte tamamen doludur.</span>
+                                    </div>
+                                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 opacity-60 pointer-events-none">
+                                      {selectedBarber.working_hours.map(time => (
+                                        <div key={time} className="py-2.5 px-3 rounded-xl border border-red-100 bg-red-50/50 text-red-400 font-medium text-center text-sm">
+                                          <span className="line-through">{time}</span>
+                                        </div>
+                                      ))}
+                                    </div>
                                   </div>
                                 );
                               }
@@ -615,7 +624,17 @@ const BookingWizard = () => {
                                       }
                                     }
                                     
-                                    if (isBooked) return null;
+                                    if (isBooked) {
+                                      return (
+                                        <button
+                                          key={time}
+                                          disabled
+                                          className="py-2.5 px-3 rounded-xl border border-red-100 bg-red-50/40 text-red-400 font-medium text-center text-sm cursor-not-allowed opacity-70 flex items-center justify-center relative overflow-hidden"
+                                        >
+                                          <span className="line-through">{time}</span>
+                                        </button>
+                                      );
+                                    }
 
                                     return (
                                       <button
