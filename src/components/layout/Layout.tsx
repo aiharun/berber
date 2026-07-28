@@ -10,6 +10,7 @@ const Layout = () => {
 
   useEffect(() => {
     setIsMobileMenuOpen(false);
+    window.scrollTo(0, 0);
   }, [location.pathname]);
 
   // Handle scroll effect for navbar
