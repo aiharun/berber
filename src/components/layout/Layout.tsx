@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useBooking } from '../../context/BookingContext';
 
 const Layout = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const { resetAppointment } = useBooking();
 
   useEffect(() => {
     setIsMobileMenuOpen(false);
@@ -42,7 +44,7 @@ const Layout = () => {
             <Link to="/" className="text-[15px] font-medium text-gray-500 hover:text-black transition-colors">
               Ana Sayfa
             </Link>
-            <Link to="/booking" className="text-[15px] font-medium text-gray-500 hover:text-black transition-colors">
+            <Link to="/booking" onClick={() => resetAppointment()} className="text-[15px] font-medium text-gray-500 hover:text-black transition-colors">
               Hizmetler
             </Link>
             <Link to="/admin" className="text-[15px] font-medium text-gray-500 hover:text-black transition-colors">
@@ -55,7 +57,7 @@ const Layout = () => {
             <Link to="/admin" className="text-[15px] font-medium text-black hover:opacity-70 transition-opacity">
               Giriş Yap
             </Link>
-            <Link to="/booking">
+            <Link to="/booking" onClick={() => resetAppointment()}>
               <button className="px-5 py-2.5 bg-black text-white text-[15px] font-medium rounded-full hover:scale-105 active:scale-95 transition-transform">
                 Randevu Al
               </button>
@@ -84,7 +86,7 @@ const Layout = () => {
                 <Link to="/" className="text-lg font-medium text-gray-800">Ana Sayfa</Link>
                 <Link to="/admin" className="text-lg font-medium text-gray-800">Yönetici</Link>
                 <Link to="/admin" className="text-lg font-medium text-gray-800">Giriş Yap</Link>
-                <Link to="/booking">
+                <Link to="/booking" onClick={() => { resetAppointment(); setIsMobileMenuOpen(false); }}>
                   <button className="w-full py-4 bg-black text-white text-lg font-medium rounded-2xl">
                     Randevu Al
                   </button>
