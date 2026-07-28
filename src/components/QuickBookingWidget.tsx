@@ -33,8 +33,8 @@ export const QuickBookingWidget: React.FC<QuickBookingWidgetProps> = ({ onComple
     totalDuration
   );
 
-  // Generate 14 days
-  const availableDates = Array.from({ length: 14 }).map((_, i) => addDays(new Date(), i));
+  // Generate 28 days
+  const availableDates = Array.from({ length: 28 }).map((_, i) => addDays(new Date(), i));
 
   // Click outside to close popovers
   useEffect(() => {
@@ -165,16 +165,15 @@ export const QuickBookingWidget: React.FC<QuickBookingWidgetProps> = ({ onComple
           
           <AnimatePresence>
             {activePopover === 'date' && (
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="absolute top-full left-1/2 -translate-x-1/2 md:left-0 md:translate-x-0 w-[320px] md:w-[400px] mt-2 p-3 bg-white rounded-2xl shadow-xl border border-black/5 z-50">
-                <div className="flex overflow-x-auto space-x-2 pb-2 [&::-webkit-scrollbar]:hidden scroll-smooth snap-x">
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="absolute top-full left-1/2 -translate-x-1/2 md:left-0 md:translate-x-0 w-[300px] md:w-[400px] mt-2 p-3 bg-white rounded-2xl shadow-xl border border-black/5 z-50">
+                <div className="grid grid-cols-4 sm:grid-cols-7 gap-2 max-h-72 overflow-y-auto pr-1">
                   {availableDates.map(date => {
                     const dateStr = format(date, 'yyyy-MM-dd');
                     const isSel = selectedDate === dateStr;
                     return (
-                      <button key={dateStr} onClick={() => { setDateTime(date, ''); setActivePopover('time'); }} className={cn("snap-center flex-shrink-0 flex flex-col items-center justify-center p-3 rounded-xl border transition-all min-w-[75px]", isSel ? "border-black bg-black text-white shadow-md" : "border-black/5 hover:border-black/20 bg-[#FAFAFA]")}>
-                        <span className="text-[10px] uppercase opacity-70 mb-1">{format(date, 'EEE', { locale: tr })}</span>
-                        <span className="text-xl font-bold leading-none">{format(date, 'd')}</span>
-                        <span className="text-[9px] uppercase mt-1 opacity-70">{format(date, 'MMM', { locale: tr })}</span>
+                      <button key={dateStr} onClick={() => { setDateTime(date, ''); setActivePopover('time'); }} className={cn("flex flex-col items-center p-2 rounded-xl border transition-all text-center", isSel ? "border-black bg-black text-white shadow-md" : "border-black/5 hover:border-black/20 bg-[#FAFAFA]")}>
+                        <span className="text-[9px] uppercase opacity-70 mb-1">{format(date, 'EEE', { locale: tr })}</span>
+                        <span className="text-sm font-bold leading-none">{format(date, 'd')}</span>
                       </button>
                     );
                   })}
