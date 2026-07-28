@@ -148,73 +148,7 @@ const BookingWizard = () => {
     }
   };
 
-  const handleRequestOtp = async () => {
-    if (!email || !email.includes('@')) return;
-    
-    // Test/Admin emaili için OTP atlama
-    const adminEmail = import.meta.env.VITE_ADMIN_EMAIL || 'admin@widber.com';
-    if (email.toLowerCase() === adminEmail.toLowerCase()) {
-      console.log(`[TEST MODU] Admin emaili tespit edildi, OTP atlanıyor.`);
-      handleConfirm();
-      return;
-    }
-
-    setIsSubmitting(true);
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
-    setGeneratedOtp(code);
-    
-    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
-    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
-    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
-
-    if (serviceId && templateId && publicKey) {
-      try {
-        await emailjs.send(
-          serviceId,
-          templateId,
-          {
-            to_email: email,
-            to_name: `${firstName} ${lastName}`,
-            otp_code: code,
-            appointment_date: selectedDate ? new Date(selectedDate).toLocaleDateString('tr-TR') : '',
-            appointment_time: selectedTime || '',
-            barber_name: selectedBarber?.name || '',
-            services_list: selectedServices.map(s => s.name).join(', ')
-          },
-          publicKey
-        );
-        console.log(`[EmailJS] OTP e-postası başarıyla gönderildi: ${email}`);
-      } catch (error: any) {
-        console.error('E-posta gönderilemedi:', error);
-        const errorDetail = error?.text || error?.message || 'Bilinmeyen hata';
-        setModalState({ isOpen: true, type: 'danger', title: 'Hata', description: `E-posta gönderilemedi. Detay: ${errorDetail}` });
-        setIsSubmitting(false);
-        return;
-      }
-    } else {
-      // MOCK EMAIL SENDING
-      console.log(`[SIMÜLASYON] ${email} adresine gönderilen kod:`, code);
-      alert(`(GELİŞTİRİCİ NOTU) .env dosyasında EmailJS ayarları eksik. Simülasyon Kodu: ${code}`);
-    }
-
-    setOtpSent(true);
-    setIsSubmitting(false);
-    
-    setModalState({ 
-      isOpen: true, 
-      type: 'success', 
-      title: 'Kod Gönderildi', 
-      description: '6 haneli doğrulama kodu e-posta adresinize gönderildi. Lütfen Spam (Gereksiz) klasörünüzü kontrol etmeyi unutmayın.' 
-    });
-  };
-
-  const handleVerifyOtp = () => {
-    if (enteredOtp === generatedOtp) {
-      handleConfirm();
-    } else {
-      setModalState({ isOpen: true, type: 'danger', title: 'Hata', description: 'Hatalı veya eksik kod girdiniz.' });
-    }
-  };
+  // OTP Verification system has been removed based on user request
 
   const handleConfirm = async () => {
     setIsSubmitting(true);
@@ -600,7 +534,7 @@ const BookingWizard = () => {
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                         />
-                        <p className="text-xs text-muted-foreground mt-1">Randevu onay kodunuz bu e-posta adresine gönderilecektir.</p>
+                        <p className="text-xs text-muted-foreground mt-1">Sizinle iletişime geçebilmemiz için gereklidir.</p>
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="phone" className="font-semibold text-sm">Telefon Numarası</Label>
@@ -701,30 +635,15 @@ const BookingWizard = () => {
                 İleri
                 <ChevronRight className="w-4 h-4 ml-1" />
               </Button>
-            ) : !otpSent ? (
-              <Button 
-                onClick={handleRequestOtp}
-                className="rounded-full bg-black hover:bg-gray-800 text-white font-semibold transition-all px-10 shadow-md hover:shadow-lg"
-              >
-                Doğrulama Kodu Gönder
-                <Check className="w-5 h-5 ml-2" />
-              </Button>
             ) : (
-              <div className="flex items-center gap-3">
-                <Input 
-                  value={enteredOtp}
-                  onChange={(e) => setEnteredOtp(e.target.value.replace(/\D/g, '').substring(0, 6))}
-                  placeholder="6 Haneli Kod" 
-                  className="w-32 text-center tracking-widest font-bold border-black/20"
-                />
-                <Button 
-                  onClick={handleVerifyOtp}
-                  disabled={isSubmitting || enteredOtp.length !== 6}
-                  className="rounded-full bg-stone-900 hover:bg-stone-800 text-white font-semibold transition-all px-8 shadow-md"
-                >
-                  {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Randevuyu Tamamla'}
-                </Button>
-              </div>
+              <Button 
+                onClick={handleConfirm}
+                disabled={isSubmitting}
+                className="rounded-full bg-stone-900 hover:bg-stone-800 text-white font-semibold transition-all px-10 shadow-md hover:shadow-lg"
+              >
+                {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Randevuyu Tamamla'}
+                {!isSubmitting && <Check className="w-5 h-5 ml-2" />}
+              </Button>
             )}
           </div>
         </Card>

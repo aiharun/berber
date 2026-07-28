@@ -64,7 +64,7 @@ export const QuickBookingWidget: React.FC<QuickBookingWidgetProps> = ({ onComple
   }
 
   return (
-    <div ref={widgetRef} className="relative bg-white/80 backdrop-blur-xl p-4 md:p-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-black/5 flex flex-col md:flex-row items-center gap-4">
+    <div ref={widgetRef} className="relative bg-white/95 p-4 md:p-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-black/5 flex flex-col md:flex-row items-center gap-4">
       
       <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-3 w-full">
         
@@ -134,7 +134,7 @@ export const QuickBookingWidget: React.FC<QuickBookingWidgetProps> = ({ onComple
           
           <AnimatePresence>
             {activePopover === 'barber' && (
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="absolute top-full left-0 w-56 mt-2 p-2 bg-white rounded-2xl shadow-xl border border-black/5 z-50">
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="absolute top-full right-0 md:left-0 md:right-auto w-56 mt-2 p-2 bg-white rounded-2xl shadow-xl border border-black/5 z-50">
                 <div className="space-y-1">
                   {barbers.map(barber => (
                     <button key={barber.id} onClick={() => { setBarber(barber); setActivePopover('date'); if (appointment.date) setDateTime(appointment.date, ''); }} className="w-full text-left p-3 rounded-xl hover:bg-gray-50 flex items-center space-x-3 transition-colors">
@@ -165,7 +165,7 @@ export const QuickBookingWidget: React.FC<QuickBookingWidgetProps> = ({ onComple
           
           <AnimatePresence>
             {activePopover === 'date' && (
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="absolute top-full left-1/2 -translate-x-1/2 md:left-0 md:translate-x-0 w-[300px] md:w-[400px] mt-2 p-3 bg-white rounded-2xl shadow-xl border border-black/5 z-50">
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="absolute top-full left-0 w-[300px] md:w-[400px] mt-2 p-3 bg-white rounded-2xl shadow-xl border border-black/5 z-50">
                 <div className="grid grid-cols-4 sm:grid-cols-7 gap-2 max-h-72 overflow-y-auto pr-1">
                   {availableDates.map(date => {
                     const dateStr = format(date, 'yyyy-MM-dd');

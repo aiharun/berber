@@ -4,7 +4,9 @@ import { Star, ArrowRight, Calendar, Clock, Scissors } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import BookingWizard from './BookingWizard';
 import { QuickBookingWidget } from '../../components/QuickBookingWidget';
-import { X } from 'lucide-react';
+import { X, Loader2, Check } from 'lucide-react';
+import { useBooking } from '../../context/BookingContext';
+import { supabase } from '../../lib/supabase';
 
 const REVIEWS = [
   {
@@ -26,6 +28,100 @@ const REVIEWS = [
     rating: 5
   }
 ];
+
+const FastBookingModal = ({ onClose }: { onClose: () => void }) => {
+  const { appointment, resetAppointment } = useBooking();
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const totalPrice = appointment.services.reduce((acc, curr) => acc + curr.price, 0);
+      const totalDuration = appointment.services.reduce((acc, curr) => acc + curr.duration, 0);
+      
+      const { data: appData, error: appError } = await supabase
+        .from('appointments')
+        .insert([{
+          customer_first_name: firstName,
+          customer_last_name: lastName,
+          phone: phone,
+          appointment_date: appointment.date,
+          appointment_time: appointment.time,
+          barber_id: appointment.barber?.id,
+          total_price: totalPrice,
+          total_duration: totalDuration
+        }])
+        .select()
+        .single();
+        
+      if (appError) throw appError;
+
+      if (appData) {
+        const serviceMappings = appointment.services.map(s => ({
+          appointment_id: appData.id,
+          service_id: s.id
+        }));
+        await supabase.from('appointment_services').insert(serviceMappings);
+      }
+      
+      setSuccess(true);
+      setTimeout(() => {
+        resetAppointment();
+        onClose();
+      }, 3000);
+    } catch (error) {
+      console.error(error);
+      alert('Bir hata oluştu, lütfen tekrar deneyin.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (success) {
+    return (
+      <div className="bg-white rounded-[2rem] p-8 max-w-md w-full mx-auto text-center shadow-2xl relative overflow-hidden border border-black/5">
+        <div className="w-20 h-20 bg-black rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl">
+          <Check className="w-10 h-10 text-white" />
+        </div>
+        <h2 className="text-3xl font-bold text-gray-900 mb-2 tracking-tight">Harika!</h2>
+        <p className="text-gray-500 font-medium leading-relaxed">Randevunuz başarıyla oluşturuldu. Sizi bekliyor olacağız.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white rounded-[2rem] p-6 md:p-8 max-w-md w-full mx-auto shadow-2xl relative border border-black/5">
+      <h2 className="text-2xl font-bold text-gray-900 mb-1 tracking-tight">İletişim Bilgileri</h2>
+      <p className="text-gray-500 text-sm mb-8 font-medium">Randevuyu tamamlamak için lütfen bilgilerinizi girin.</p>
+      
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-1.5">
+            <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider">Ad</label>
+            <input required value={firstName} onChange={e => setFirstName(e.target.value)} className="w-full bg-[#F5F5F7] border border-transparent rounded-xl px-4 py-3.5 text-[15px] font-medium focus:bg-white focus:border-black/20 focus:outline-none transition-all" placeholder="Adınız" />
+          </div>
+          <div className="space-y-1.5">
+            <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider">Soyad</label>
+            <input required value={lastName} onChange={e => setLastName(e.target.value)} className="w-full bg-[#F5F5F7] border border-transparent rounded-xl px-4 py-3.5 text-[15px] font-medium focus:bg-white focus:border-black/20 focus:outline-none transition-all" placeholder="Soyadınız" />
+          </div>
+        </div>
+        <div className="space-y-1.5">
+          <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider">Telefon</label>
+          <input required type="tel" value={phone} onChange={e => setPhone(e.target.value)} className="w-full bg-[#F5F5F7] border border-transparent rounded-xl px-4 py-3.5 text-[15px] font-medium focus:bg-white focus:border-black/20 focus:outline-none transition-all tracking-wider" placeholder="05XX XXX XX XX" />
+        </div>
+        
+        <button disabled={loading} type="submit" className="w-full bg-black text-white rounded-xl py-4 font-semibold text-[15px] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center mt-4 shadow-md">
+          {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Randevuyu Onayla'}
+        </button>
+      </form>
+    </div>
+  );
+};
 
 const Home = () => {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
@@ -61,15 +157,13 @@ const Home = () => {
               transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
               className="w-full lg:w-1/2 relative"
             >
-              <div className="relative rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-2xl aspect-[4/3] md:aspect-auto md:h-[600px] border border-black/5">
+              <div className="relative rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-2xl aspect-[4/3] md:aspect-auto md:h-[600px] border border-black/5 bg-gray-100">
                 <img 
                   src="/hero-barber.png" 
                   alt="Premium Barber Shop Interior" 
                   className="absolute inset-0 w-full h-full object-cover"
                 />
               </div>
-              {/* Subtle background glow */}
-              <div className="absolute -inset-10 bg-gradient-to-tr from-gray-200 to-transparent opacity-50 blur-3xl -z-10 rounded-full"></div>
             </motion.div>
           </div>
         </div>
@@ -134,7 +228,7 @@ const Home = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+              className="absolute inset-0 bg-black/60"
               onClick={() => setIsBookingOpen(false)}
             />
             <motion.div 
@@ -145,11 +239,13 @@ const Home = () => {
             >
               <button 
                 onClick={() => setIsBookingOpen(false)}
-                className="absolute top-4 right-4 md:top-8 md:right-8 w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-100 transition-colors z-50 text-black border border-black/5"
+                className="absolute top-4 right-4 md:top-8 md:right-8 w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:scale-105 active:scale-95 transition-all z-50 text-black border border-black/5"
               >
-                <X className="w-6 h-6" />
+                <X className="w-5 h-5" />
               </button>
-              <BookingWizard />
+              <div className="flex items-center justify-center min-h-screen px-4 pb-20 md:pb-0">
+                <FastBookingModal onClose={() => setIsBookingOpen(false)} />
+              </div>
             </motion.div>
           </div>
         )}
