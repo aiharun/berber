@@ -249,6 +249,14 @@ const BookingWizard = () => {
   const handleRequestOtp = async () => {
     if (!email || !email.includes('@')) return;
     
+    // Test/Admin emaili için OTP atlama
+    const adminEmail = import.meta.env.VITE_ADMIN_EMAIL || 'admin@widber.com';
+    if (email.toLowerCase() === adminEmail.toLowerCase()) {
+      console.log(`[TEST MODU] Admin emaili tespit edildi, OTP atlanıyor.`);
+      handleConfirm();
+      return;
+    }
+
     setIsSubmitting(true);
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     setGeneratedOtp(code);
