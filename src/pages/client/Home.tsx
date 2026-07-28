@@ -1,7 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Star, ArrowRight, Calendar, Clock, Scissors } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import BookingWizard from './BookingWizard';
+import { X } from 'lucide-react';
 
 const REVIEWS = [
   {
@@ -25,6 +27,8 @@ const REVIEWS = [
 ];
 
 const Home = () => {
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
+
   return (
     <div className="flex flex-col min-h-screen bg-[#FAFAFA] overflow-hidden">
       
@@ -80,8 +84,8 @@ const Home = () => {
             className="bg-white/80 backdrop-blur-xl p-6 md:p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-black/5 flex flex-col md:flex-row items-center gap-6"
           >
             <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
-              {/* Fake Inputs that navigate to actual booking */}
-              <Link to="/booking" className="flex items-center space-x-4 p-4 rounded-2xl bg-[#F5F5F7] hover:bg-[#EBEBEF] transition-colors cursor-pointer group">
+              {/* Fake Inputs that open modal */}
+              <button onClick={() => setIsBookingOpen(true)} className="flex items-center space-x-4 p-4 rounded-2xl bg-[#F5F5F7] hover:bg-[#EBEBEF] transition-colors cursor-pointer group text-left">
                 <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
                   <Calendar className="w-5 h-5 text-gray-600 group-hover:text-black transition-colors" />
                 </div>
@@ -89,9 +93,9 @@ const Home = () => {
                   <span className="text-[13px] font-semibold text-gray-500 uppercase tracking-wide">Tarih</span>
                   <span className="text-[15px] font-medium text-black">Bugün</span>
                 </div>
-              </Link>
+              </button>
               
-              <Link to="/booking" className="flex items-center space-x-4 p-4 rounded-2xl bg-[#F5F5F7] hover:bg-[#EBEBEF] transition-colors cursor-pointer group">
+              <button onClick={() => setIsBookingOpen(true)} className="flex items-center space-x-4 p-4 rounded-2xl bg-[#F5F5F7] hover:bg-[#EBEBEF] transition-colors cursor-pointer group text-left">
                 <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
                   <Clock className="w-5 h-5 text-gray-600 group-hover:text-black transition-colors" />
                 </div>
@@ -99,9 +103,9 @@ const Home = () => {
                   <span className="text-[13px] font-semibold text-gray-500 uppercase tracking-wide">Saat</span>
                   <span className="text-[15px] font-medium text-black">Seçiniz</span>
                 </div>
-              </Link>
+              </button>
 
-              <Link to="/booking" className="flex items-center space-x-4 p-4 rounded-2xl bg-[#F5F5F7] hover:bg-[#EBEBEF] transition-colors cursor-pointer group">
+              <button onClick={() => setIsBookingOpen(true)} className="flex items-center space-x-4 p-4 rounded-2xl bg-[#F5F5F7] hover:bg-[#EBEBEF] transition-colors cursor-pointer group text-left">
                 <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
                   <Scissors className="w-5 h-5 text-gray-600 group-hover:text-black transition-colors" />
                 </div>
@@ -109,14 +113,14 @@ const Home = () => {
                   <span className="text-[13px] font-semibold text-gray-500 uppercase tracking-wide">Hizmet</span>
                   <span className="text-[15px] font-medium text-black">Seçiniz</span>
                 </div>
-              </Link>
+              </button>
             </div>
             
-            <Link to="/booking" className="w-full md:w-auto">
-              <button className="w-full md:w-16 h-16 rounded-2xl bg-black flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-md group">
+            <button onClick={() => setIsBookingOpen(true)} className="w-full md:w-auto mt-4 md:mt-0 md:ml-4">
+              <div className="w-full md:w-16 h-16 rounded-2xl bg-black flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-md group">
                 <ArrowRight className="w-6 h-6 text-white group-hover:translate-x-1 transition-transform" />
-              </button>
-            </Link>
+              </div>
+            </button>
           </motion.div>
         </div>
       </section>
@@ -158,6 +162,35 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      {/* Booking Modal */}
+      <AnimatePresence>
+        {isBookingOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-[#FAFAFA]/95 backdrop-blur-xl"
+              onClick={() => setIsBookingOpen(false)}
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative z-10 w-full max-h-screen overflow-y-auto pt-16 md:pt-0"
+            >
+              <button 
+                onClick={() => setIsBookingOpen(false)}
+                className="absolute top-4 right-4 md:top-8 md:right-8 w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-100 transition-colors z-50 text-black border border-black/5"
+              >
+                <X className="w-6 h-6" />
+              </button>
+              <BookingWizard />
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
     </div>
   );
