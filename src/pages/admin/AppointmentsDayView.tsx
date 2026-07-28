@@ -23,6 +23,15 @@ const AppointmentsDayView = () => {
     return appointments.filter(app => app.appointment_date === date);
   }, [appointments, date]);
 
+  const groupedAppointments = useMemo(() => {
+    return filteredAppointments.reduce((acc, app) => {
+      const barberName = app.barbers?.name || 'Belirtilmemiş Personel';
+      if (!acc[barberName]) acc[barberName] = [];
+      acc[barberName].push(app);
+      return acc;
+    }, {} as Record<string, typeof filteredAppointments>);
+  }, [filteredAppointments]);
+
   const handleStatusChange = (id: string, newStatus: string) => {
     updateStatus(id, newStatus);
   };
@@ -61,8 +70,15 @@ const AppointmentsDayView = () => {
           </Button>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-8">
-          {filteredAppointments.map((app) => {
+        <div className="space-y-12 mt-8">
+          {Object.entries(groupedAppointments).map(([barberName, apps]) => (
+            <div key={barberName} className="space-y-6">
+              <h2 className="text-xl font-bold border-b border-border/50 pb-2 flex items-center text-foreground">
+                <span className="bg-gold-500/10 text-gold-600 px-3 py-1 rounded-lg mr-3 text-sm">{apps.length} Randevu</span>
+                {barberName}
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {apps.map((app) => {
             const serviceNames = app.appointment_services?.map(as => as.services?.name).join(', ') || 'Bilinmiyor';
             
             const isPending = app.status === 'pending';
@@ -182,6 +198,9 @@ const AppointmentsDayView = () => {
               </Card>
             );
           })}
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </div>
