@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Star, ArrowRight, Calendar, Clock, Scissors } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import BookingWizard from './BookingWizard';
+import { QuickBookingWidget } from '../../components/QuickBookingWidget';
 import { X } from 'lucide-react';
 
 const REVIEWS = [
@@ -74,53 +75,15 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Quick Booking Module */}
+      {/* Functional Quick Booking Module */}
       <section className="relative -mt-8 md:-mt-16 z-20 px-6">
         <div className="container mx-auto max-w-5xl">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="bg-white/80 backdrop-blur-xl p-6 md:p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-black/5 flex flex-col md:flex-row items-center gap-6"
           >
-            <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
-              {/* Fake Inputs that open modal */}
-              <button onClick={() => setIsBookingOpen(true)} className="flex items-center space-x-4 p-4 rounded-2xl bg-[#F5F5F7] hover:bg-[#EBEBEF] transition-colors cursor-pointer group text-left">
-                <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
-                  <Calendar className="w-5 h-5 text-gray-600 group-hover:text-black transition-colors" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-[13px] font-semibold text-gray-500 uppercase tracking-wide">Tarih</span>
-                  <span className="text-[15px] font-medium text-black">Bugün</span>
-                </div>
-              </button>
-              
-              <button onClick={() => setIsBookingOpen(true)} className="flex items-center space-x-4 p-4 rounded-2xl bg-[#F5F5F7] hover:bg-[#EBEBEF] transition-colors cursor-pointer group text-left">
-                <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
-                  <Clock className="w-5 h-5 text-gray-600 group-hover:text-black transition-colors" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-[13px] font-semibold text-gray-500 uppercase tracking-wide">Saat</span>
-                  <span className="text-[15px] font-medium text-black">Seçiniz</span>
-                </div>
-              </button>
-
-              <button onClick={() => setIsBookingOpen(true)} className="flex items-center space-x-4 p-4 rounded-2xl bg-[#F5F5F7] hover:bg-[#EBEBEF] transition-colors cursor-pointer group text-left">
-                <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
-                  <Scissors className="w-5 h-5 text-gray-600 group-hover:text-black transition-colors" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-[13px] font-semibold text-gray-500 uppercase tracking-wide">Hizmet</span>
-                  <span className="text-[15px] font-medium text-black">Seçiniz</span>
-                </div>
-              </button>
-            </div>
-            
-            <button onClick={() => setIsBookingOpen(true)} className="w-full md:w-auto mt-4 md:mt-0 md:ml-4">
-              <div className="w-full md:w-16 h-16 rounded-2xl bg-black flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-md group">
-                <ArrowRight className="w-6 h-6 text-white group-hover:translate-x-1 transition-transform" />
-              </div>
-            </button>
+            <QuickBookingWidget onComplete={() => setIsBookingOpen(true)} />
           </motion.div>
         </div>
       </section>

@@ -12,6 +12,7 @@ import { cn } from '../../lib/utils';
 import { addDays, format, getDay, startOfDay, isToday, parse, addMinutes } from 'date-fns';
 import { tr } from 'date-fns/locale';
 import { useSupabaseData } from '../../hooks/useSupabaseData';
+import { useAvailableTimes } from '../../hooks/useAvailableTimes';
 import { supabase } from '../../lib/supabase';
 import emailjs from '@emailjs/browser';
 
@@ -27,7 +28,11 @@ const BookingWizard = () => {
   const { services: SERVICES, barbers: BARBERS, loading } = useSupabaseData();
   const navigate = useNavigate();
   const { appointment, setServices, setBarber, setDateTime, setCustomerInfo, resetAppointment } = useBooking();
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(() => {
+    // Auto-advance if previous steps are already filled
+    if (appointment.services.length > 0 && appointment.barber && appointment.date && appointment.time) return 4;
+    return 1;
+  });
   const [selectedServices, setSelectedServices] = useState<Service[]>(appointment.services);
   const [selectedBarber, setSelectedBarber] = useState<Barber | null>(appointment.barber);
   const [selectedDate, setSelectedDate] = useState<string>(appointment.date ? format(appointment.date, 'yyyy-MM-dd') : '');
@@ -63,115 +68,12 @@ const BookingWizard = () => {
     }
   };
 
-  const [bookedTimes, setBookedTimes] = useState<string[]>([]);
-  const [fetchingTimes, setFetchingTimes] = useState(false);
 
   // İhtiyaç duyulan toplam süre
   const totalDuration = selectedServices.reduce((acc, curr) => acc + curr.duration, 0);
   const totalPrice = selectedServices.reduce((acc, curr) => acc + curr.price, 0);
 
-  React.useEffect(() => {
-    if (!selectedDate || !selectedBarber) return;
-    
-    const fetchBookedTimes = async () => {
-      setFetchingTimes(true);
-      try {
-        // 1. Randevuları al
-        const { data: appData, error: appError } = await supabase
-          .from('appointments')
-          .select('appointment_time, barber_id, total_duration')
-          .eq('appointment_date', selectedDate)
-          .in('status', ['pending', 'approved']);
-          
-        if (appError) throw appError;
-
-        // 2. Personellerin kendi kapattığı saatleri al
-        const { data: blockedData, error: blockedError } = await supabase
-          .from('barber_blocked_times')
-          .select('blocked_time, barber_id')
-          .eq('blocked_date', selectedDate);
-
-        if (blockedError) throw blockedError;
-        
-        // Randevuların başlangıç saatlerini ve sürelerini al
-        const appointmentsAtDate = appData?.map(app => {
-          const t = app.appointment_time;
-          return {
-            time: t.length > 5 ? t.substring(0, 5) : t,
-            barber_id: app.barber_id,
-            duration: app.total_duration || 30
-          };
-        }) || [];
-        
-        const barberWorkingHours = selectedBarber?.working_hours || [];
-        const initialBlockedSlots = new Set<string>();
-        
-        // 1. AŞAMA: Mevcut randevuların kapsadığı TÜM saatleri bloke et
-        barberWorkingHours.forEach(time => {
-          const slotTime = parse(time, 'HH:mm', new Date());
-          let isBlockedForSelectedBarber = false;
-          let totalBarbersBookedCount = 0;
-          
-          appointmentsAtDate.forEach(app => {
-            const appStartTime = parse(app.time, 'HH:mm', new Date());
-            const appEndTime = addMinutes(appStartTime, app.duration);
-            
-            // Eğer incelenen slotTime, randevunun başlangıcıyla bitişi (hariç) arasındaysa çakışma var!
-            if (slotTime >= appStartTime && slotTime < appEndTime) {
-              if (app.barber_id === selectedBarber.id) {
-                isBlockedForSelectedBarber = true;
-              }
-              totalBarbersBookedCount++;
-            }
-          });
-          
-          if (isBlockedForSelectedBarber) {
-            initialBlockedSlots.add(time);
-          } else {
-            // Eğer randevu yoksa, bu saat personelin MÜSAİTLİK YÖNETİMİNDEN kapattığı istisnai bir saat mi?
-            const isManuallyBlocked = blockedData?.some(b => b.blocked_time === time && b.barber_id === selectedBarber.id);
-            if (isManuallyBlocked) {
-              initialBlockedSlots.add(time);
-            }
-          }
-        });
-        
-        // 2. AŞAMA: Müşterinin seçtiği hizmetlerin toplam süresini sığdırabilecek kadar ardışık boşluk var mı kontrolü
-        const requiredBlocks = Math.ceil(totalDuration / 30);
-        const finalBlockedSlots = new Set<string>(initialBlockedSlots);
-        
-        if (requiredBlocks > 1) {
-          barberWorkingHours.forEach((time, index) => {
-            // Zaten doluysa bakmaya gerek yok
-            if (finalBlockedSlots.has(time)) return;
-            
-            // Bu saatin sonrasında yeterli boş slot var mı?
-            let hasEnoughRoom = true;
-            for (let i = 1; i < requiredBlocks; i++) {
-              const nextIndex = index + i;
-              // Eğer mesai bitiyorsa veya sonraki slotlardan biri doluysa sığmaz
-              if (nextIndex >= barberWorkingHours.length || initialBlockedSlots.has(barberWorkingHours[nextIndex])) {
-                hasEnoughRoom = false;
-                break;
-              }
-            }
-            
-            if (!hasEnoughRoom) {
-              finalBlockedSlots.add(time);
-            }
-          });
-        }
-        
-        setBookedTimes(Array.from(finalBlockedSlots));
-      } catch (err) {
-        console.error("Dolu saatler çekilirken hata:", err);
-      } finally {
-        setFetchingTimes(false);
-      }
-    };
-    
-    fetchBookedTimes();
-  }, [selectedDate, selectedBarber, totalDuration]);
+  const { bookedTimes, fetchingTimes } = useAvailableTimes(selectedDate, selectedBarber, totalDuration);
 
   // Scroll handling
   const scrollRef = React.useRef<HTMLDivElement>(null);
