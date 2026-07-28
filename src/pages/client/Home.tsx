@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Star, ArrowRight, Calendar, Clock, Scissors } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
