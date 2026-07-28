@@ -385,7 +385,7 @@ const BookingWizard = () => {
   };
 
   return (
-    <div className="min-h-screen py-12 px-4 bg-background">
+    <div className="min-h-screen py-16 px-6 bg-[#FAFAFA]">
       <div className="max-w-3xl mx-auto">
         {/* Progress Tracker */}
         <div className="mb-8">
@@ -394,8 +394,8 @@ const BookingWizard = () => {
               <div key={step.id} className="flex flex-col items-center">
                 <div className={cn(
                   "w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold mb-2 transition-colors",
-                  currentStep === step.id ? "bg-gold-500 text-white shadow-md" : 
-                  currentStep > step.id ? "bg-gold-500/20 text-gold-600" : "bg-white border border-border text-muted-foreground"
+                  currentStep === step.id ? "bg-black text-white shadow-md" : 
+                  currentStep > step.id ? "bg-black/5 text-gray-800" : "bg-white border border-border text-muted-foreground"
                 )}>
                   {currentStep > step.id ? <Check className="w-4 h-4" /> : step.id}
                 </div>
@@ -405,17 +405,17 @@ const BookingWizard = () => {
           </div>
           <div className="h-1.5 w-full bg-secondary rounded-full overflow-hidden">
             <div 
-              className="h-full bg-gold-500 transition-all duration-300 ease-in-out"
+              className="h-full bg-black transition-all duration-300 ease-in-out"
               style={{ width: `${((currentStep - 1) / (STEPS.length - 1)) * 100}%` }}
             />
           </div>
         </div>
 
         {/* Form Container */}
-        <Card className="bg-white border border-border/60 shadow-lg rounded-2xl overflow-hidden min-h-[400px] flex flex-col relative">
+        <Card className="bg-white border border-black/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[2rem] overflow-hidden min-h-[400px] flex flex-col relative">
           {loading && (
             <div className="absolute inset-0 bg-white/60 backdrop-blur-sm z-50 flex items-center justify-center">
-               <Loader2 className="w-8 h-8 animate-spin text-gold-500" />
+               <Loader2 className="w-8 h-8 animate-spin text-black" />
             </div>
           )}
           <div className="p-6 md:p-8 flex-1">
@@ -441,7 +441,7 @@ const BookingWizard = () => {
                             onClick={() => toggleService(service)}
                             className={cn(
                               "p-4 rounded-xl border cursor-pointer transition-all flex justify-between items-center group",
-                              isSelected ? "border-gold-500 bg-gold-500/5 shadow-sm" : "border-border bg-white hover:border-gold-500/40 hover:shadow-sm"
+                              isSelected ? "border-black bg-black/5 shadow-sm" : "border-border bg-white hover:border-black/10 hover:shadow-sm"
                             )}
                           >
                             <div>
@@ -452,7 +452,7 @@ const BookingWizard = () => {
                               <span className="font-bold text-lg text-foreground">₺{service.price}</span>
                               <div className={cn(
                                 "w-6 h-6 rounded-full border flex items-center justify-center transition-colors",
-                                isSelected ? "border-gold-500 bg-gold-500 text-white" : "border-border bg-secondary"
+                                isSelected ? "border-black bg-black text-white" : "border-border bg-secondary"
                               )}>
                                 {isSelected && <Check className="w-4 h-4" />}
                               </div>
@@ -477,7 +477,7 @@ const BookingWizard = () => {
                             onClick={() => setSelectedBarber(barber)}
                             className={cn(
                               "p-4 rounded-xl border cursor-pointer transition-all flex items-center space-x-4",
-                              isSelected ? "border-gold-500 bg-gold-500/5 shadow-sm" : "border-border bg-white hover:border-gold-500/40 hover:shadow-sm"
+                              isSelected ? "border-black bg-black/5 shadow-sm" : "border-border bg-white hover:border-black/10 hover:shadow-sm"
                             )}
                           >
                             <div className="w-12 h-12 rounded-full border border-border bg-secondary flex items-center justify-center text-muted-foreground">
@@ -488,7 +488,7 @@ const BookingWizard = () => {
                             </div>
                             <div className={cn(
                                 "w-6 h-6 rounded-full border flex items-center justify-center transition-colors",
-                                isSelected ? "border-gold-500 bg-gold-500 text-white" : "border-border bg-secondary"
+                                isSelected ? "border-black bg-black text-white" : "border-border bg-secondary"
                               )}>
                                 {isSelected && <Check className="w-4 h-4" />}
                             </div>
@@ -536,7 +536,7 @@ const BookingWizard = () => {
                                   }}
                                   className={cn(
                                     "snap-center flex-shrink-0 flex flex-col items-center justify-center p-3 rounded-xl border transition-all min-w-[90px]",
-                                    isSelected ? "border-gold-500 bg-gold-500 text-white shadow-md" : "border-border bg-white text-foreground hover:border-gold-500/40 hover:shadow-sm"
+                                    isSelected ? "border-black bg-black text-white shadow-md" : "border-border bg-white text-foreground hover:border-black/10 hover:shadow-sm"
                                   )}
                                 >
                                   <span className={cn("text-xs font-medium uppercase mb-1", isSelected ? "text-white/90" : "text-muted-foreground")}>{format(date, 'EEEE', { locale: tr })}</span>
@@ -569,7 +569,7 @@ const BookingWizard = () => {
                         >
                           <div className="flex items-center justify-between mb-3">
                             <Label className="block font-semibold text-foreground text-sm">Müsait Saatler</Label>
-                            {fetchingTimes && <Loader2 className="w-4 h-4 animate-spin text-gold-500" />}
+                            {fetchingTimes && <Loader2 className="w-4 h-4 animate-spin text-black" />}
                           </div>
                           
                           {(!selectedBarber?.working_hours || selectedBarber.working_hours.length === 0) ? (
@@ -643,8 +643,8 @@ const BookingWizard = () => {
                                         className={cn(
                                           "py-2.5 px-3 rounded-xl border font-medium transition-all text-center text-sm",
                                           isSelected 
-                                            ? "border-gold-500 bg-gold-500 text-white shadow-md" 
-                                            : "border-border bg-white text-foreground hover:border-gold-500/40 hover:shadow-sm"
+                                            ? "border-black bg-black text-white shadow-md" 
+                                            : "border-border bg-white text-foreground hover:border-black/10 hover:shadow-sm"
                                         )}
                                       >
                                         {time}
@@ -672,7 +672,7 @@ const BookingWizard = () => {
                           <Input 
                             id="firstName" 
                             placeholder="Adınız" 
-                            className="rounded-lg border-border focus-visible:ring-gold-500 focus-visible:ring-1 py-5"
+                            className="rounded-lg border-border focus-visible:ring-black focus-visible:ring-1 py-5"
                             value={firstName}
                             onChange={(e) => setFirstName(e.target.value)}
                           />
@@ -682,7 +682,7 @@ const BookingWizard = () => {
                           <Input 
                             id="lastName" 
                             placeholder="Soyadınız" 
-                            className="rounded-lg border-border focus-visible:ring-gold-500 focus-visible:ring-1 py-5"
+                            className="rounded-lg border-border focus-visible:ring-black focus-visible:ring-1 py-5"
                             value={lastName}
                             onChange={(e) => setLastName(e.target.value)}
                           />
@@ -694,7 +694,7 @@ const BookingWizard = () => {
                           id="email" 
                           type="email"
                           placeholder="ornek@mail.com" 
-                          className="rounded-lg border-border focus-visible:ring-gold-500 focus-visible:ring-1 py-5"
+                          className="rounded-lg border-border focus-visible:ring-black focus-visible:ring-1 py-5"
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                         />
@@ -706,7 +706,7 @@ const BookingWizard = () => {
                           id="phone" 
                           type="tel"
                           placeholder="05XX XXX XX XX" 
-                          className="rounded-lg border-border focus-visible:ring-gold-500 focus-visible:ring-1 py-5 tracking-wider"
+                          className="rounded-lg border-border focus-visible:ring-black focus-visible:ring-1 py-5 tracking-wider"
                           value={phone}
                           onChange={handlePhoneChange}
                         />
@@ -737,11 +737,11 @@ const BookingWizard = () => {
                         <div>
                           <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">Tarih & Saat</h4>
                           <p className="font-semibold text-lg flex items-center">
-                            <CalendarIcon className="w-4 h-4 mr-2 text-gold-600" />
+                            <CalendarIcon className="w-4 h-4 mr-2 text-gray-800" />
                             {selectedDate && new Date(selectedDate).toLocaleDateString('tr-TR')}
                           </p>
                           <p className="font-semibold text-lg flex items-center mt-1">
-                            <Clock className="w-4 h-4 mr-2 text-gold-600" />
+                            <Clock className="w-4 h-4 mr-2 text-gray-800" />
                             {selectedTime}
                           </p>
                         </div>
@@ -759,15 +759,15 @@ const BookingWizard = () => {
                         </div>
                         <div className="flex justify-between font-bold text-xl border-t border-border/60 mt-4 pt-4">
                           <span>Toplam</span>
-                          <span className="text-gold-600">₺{totalPrice}</span>
+                          <span className="text-gray-800">₺{totalPrice}</span>
                         </div>
                         <p className="text-xs font-medium text-muted-foreground mt-1">Toplam Süre: {totalDuration} Dakika</p>
                       </div>
                     </div>
 
-                    <div className="bg-gold-500/10 border border-gold-500/20 rounded-xl p-4 flex items-start space-x-3 text-sm">
-                      <AlertCircle className="w-5 h-5 text-gold-600 shrink-0 mt-0.5" />
-                      <p className="text-gold-700">
+                    <div className="bg-#F5F5F7 border border-black/5 rounded-xl p-4 flex items-start space-x-3 text-sm">
+                      <AlertCircle className="w-5 h-5 text-gray-800 shrink-0 mt-0.5" />
+                      <p className="text-gray-900">
                         <strong className="block mb-1 font-semibold">Ödeme Bilgisi</strong>
                         Sistem üzerinden herhangi bir ücret alınmamaktadır. Ödemenizi hizmet bitiminde dükkanda yapabilirsiniz.
                       </p>
@@ -794,7 +794,7 @@ const BookingWizard = () => {
               <Button 
                 onClick={handleNext} 
                 disabled={isNextDisabled()}
-                className="rounded-full bg-gold-500 hover:bg-gold-600 text-white font-semibold transition-all px-8 disabled:opacity-50"
+                className="rounded-full bg-black hover:bg-gray-800 text-white font-semibold transition-all px-8 disabled:opacity-50"
               >
                 İleri
                 <ChevronRight className="w-4 h-4 ml-1" />
@@ -802,7 +802,7 @@ const BookingWizard = () => {
             ) : !otpSent ? (
               <Button 
                 onClick={handleRequestOtp}
-                className="rounded-full bg-gold-500 hover:bg-gold-600 text-white font-semibold transition-all px-10 shadow-md hover:shadow-lg"
+                className="rounded-full bg-black hover:bg-gray-800 text-white font-semibold transition-all px-10 shadow-md hover:shadow-lg"
               >
                 Doğrulama Kodu Gönder
                 <Check className="w-5 h-5 ml-2" />
@@ -813,7 +813,7 @@ const BookingWizard = () => {
                   value={enteredOtp}
                   onChange={(e) => setEnteredOtp(e.target.value.replace(/\D/g, '').substring(0, 6))}
                   placeholder="6 Haneli Kod" 
-                  className="w-32 text-center tracking-widest font-bold border-gold-500/50"
+                  className="w-32 text-center tracking-widest font-bold border-black/20"
                 />
                 <Button 
                   onClick={handleVerifyOtp}
