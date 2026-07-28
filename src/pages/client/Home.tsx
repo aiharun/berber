@@ -1,226 +1,162 @@
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { Scissors, Star, ArrowRight, Instagram, Twitter } from 'lucide-react';
-import { useSupabaseData } from '../../hooks/useSupabaseData';
-import { motion, useAnimation, useInView } from 'framer-motion';
-import { cn } from '../../lib/utils';
+import { Star, ArrowRight, Calendar, Clock, Scissors } from 'lucide-react';
+import { motion } from 'framer-motion';
 
-// Helper component for fade-in animations on scroll
-const FadeIn = ({ children, delay = 0, className = "" }: { children: React.ReactNode, delay?: number, className?: string }) => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
-  const controls = useAnimation();
-
-  useEffect(() => {
-    if (isInView) controls.start("visible");
-  }, [isInView, controls]);
-
-  return (
-    <motion.div
-      ref={ref}
-      variants={{
-        hidden: { opacity: 0, y: 30 },
-        visible: { opacity: 1, y: 0, transition: { duration: 0.6, delay, ease: "easeOut" } }
-      }}
-      initial="hidden"
-      animate={controls}
-      className={className}
-    >
-      {children}
-    </motion.div>
-  );
-};
+const REVIEWS = [
+  {
+    id: 1,
+    name: "Can Yılmaz",
+    text: "Minimalist tasarımı ve profesyonel hizmetiyle benzersiz bir deneyim. Kesinlikle tavsiye ederim.",
+    rating: 5
+  },
+  {
+    id: 2,
+    name: "Kaan Tekin",
+    text: "Sıra beklemeden, tam saatinde hizmet almak harika. Atmosfer inanılmaz derecede ferah ve temiz.",
+    rating: 5
+  },
+  {
+    id: 3,
+    name: "Emre Şahin",
+    text: "Sadece saç kesimi değil, tam bir bakım seansı. Yeni favori mekanım.",
+    rating: 5
+  }
+];
 
 const Home = () => {
-  const { services, barbers, loading } = useSupabaseData();
-
   return (
-    <div className="flex flex-col min-h-screen bg-stone-950 text-stone-50 selection:bg-gold-500 selection:text-stone-950">
+    <div className="flex flex-col min-h-screen bg-[#FAFAFA] overflow-hidden">
       
-      {/* 1. HERO SECTION - Full screen, brutalist dark theme */}
-      <section className="relative min-h-[90vh] flex flex-col justify-center overflow-hidden border-b-8 border-gold-500">
-        {/* Background Image with heavy dark overlay */}
-        <div className="absolute inset-0 z-0">
-          <img 
-            src="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?ixlib=rb-4.0.3&auto=format&fit=crop&w=2074&q=80" 
-            alt="Barbershop" 
-            className="w-full h-full object-cover object-center opacity-40 grayscale-[30%]"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/80 to-stone-950/40"></div>
-          <div className="absolute inset-0 bg-stone-950/30 mix-blend-multiply"></div>
-        </div>
+      {/* Hero Section */}
+      <section className="relative pt-12 md:pt-20 pb-16 px-6">
+        <div className="container mx-auto max-w-7xl">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-16">
+            
+            {/* Text Content */}
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              className="w-full lg:w-1/2 space-y-8"
+            >
+              <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-[#1D1D1F] leading-[1.1]">
+                Kusursuz Görünüm. <br />
+                <span className="text-gray-400">Zahmetsiz Deneyim.</span>
+              </h1>
+              <p className="text-lg md:text-xl text-gray-500 font-medium max-w-lg leading-relaxed">
+                Modern erkeğin ihtiyaçlarına özel tasarlanmış premium bakım alanı. Şehrin karmaşasından uzaklaşın, tarzınızı sanatla buluşturun.
+              </p>
+            </motion.div>
 
-        <div className="container mx-auto px-6 z-10 pt-20">
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            className="max-w-4xl"
+            {/* Hero Image */}
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+              className="w-full lg:w-1/2 relative"
+            >
+              <div className="relative rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-2xl aspect-[4/3] md:aspect-auto md:h-[600px] border border-black/5">
+                <img 
+                  src="/hero-barber.png" 
+                  alt="Premium Barber Shop Interior" 
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+              </div>
+              {/* Subtle background glow */}
+              <div className="absolute -inset-10 bg-gradient-to-tr from-gray-200 to-transparent opacity-50 blur-3xl -z-10 rounded-full"></div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Quick Booking Module */}
+      <section className="relative -mt-8 md:-mt-16 z-20 px-6">
+        <div className="container mx-auto max-w-5xl">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="bg-white/80 backdrop-blur-xl p-6 md:p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-black/5 flex flex-col md:flex-row items-center gap-6"
           >
-            <div className="flex items-center gap-4 mb-6">
-              <div className="h-[2px] w-12 bg-gold-500"></div>
-              <span className="font-sans font-bold tracking-[0.3em] uppercase text-gold-500 text-sm md:text-base">Premium Barbershop</span>
+            <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
+              {/* Fake Inputs that navigate to actual booking */}
+              <Link to="/booking" className="flex items-center space-x-4 p-4 rounded-2xl bg-[#F5F5F7] hover:bg-[#EBEBEF] transition-colors cursor-pointer group">
+                <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
+                  <Calendar className="w-5 h-5 text-gray-600 group-hover:text-black transition-colors" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[13px] font-semibold text-gray-500 uppercase tracking-wide">Tarih</span>
+                  <span className="text-[15px] font-medium text-black">Bugün</span>
+                </div>
+              </Link>
+              
+              <Link to="/booking" className="flex items-center space-x-4 p-4 rounded-2xl bg-[#F5F5F7] hover:bg-[#EBEBEF] transition-colors cursor-pointer group">
+                <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
+                  <Clock className="w-5 h-5 text-gray-600 group-hover:text-black transition-colors" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[13px] font-semibold text-gray-500 uppercase tracking-wide">Saat</span>
+                  <span className="text-[15px] font-medium text-black">Seçiniz</span>
+                </div>
+              </Link>
+
+              <Link to="/booking" className="flex items-center space-x-4 p-4 rounded-2xl bg-[#F5F5F7] hover:bg-[#EBEBEF] transition-colors cursor-pointer group">
+                <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
+                  <Scissors className="w-5 h-5 text-gray-600 group-hover:text-black transition-colors" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[13px] font-semibold text-gray-500 uppercase tracking-wide">Hizmet</span>
+                  <span className="text-[15px] font-medium text-black">Seçiniz</span>
+                </div>
+              </Link>
             </div>
             
-            <h1 className="font-display font-black text-6xl sm:text-7xl md:text-9xl uppercase leading-[0.9] tracking-tighter text-white mb-8 drop-shadow-2xl">
-              TARZINI <br/>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold-400 to-gold-600">
-                YARAT.
-              </span>
-            </h1>
-            
-            <p className="font-sans text-stone-400 text-lg md:text-2xl max-w-2xl mb-12 font-medium leading-relaxed">
-              Sıradanlığı reddet. Şehrin merkezinde brutalist ve lüks bir atmosferde usta makasların dokunuşunu hisset.
-            </p>
-            
-            <Link to="/booking">
-              <button className="group relative inline-flex items-center justify-center bg-gold-500 text-stone-950 px-8 py-5 font-bold font-sans tracking-widest uppercase overflow-hidden shadow-[8px_8px_0px_0px_rgba(255,255,255,0.05)] transition-all hover:shadow-[12px_12px_0px_0px_rgba(255,255,255,0.08)] hover:-translate-y-1 active:translate-y-1 active:shadow-none">
-                <span className="relative z-10 flex items-center gap-3">
-                  Hemen Randevu Al <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </span>
-                <div className="absolute inset-0 h-full w-full bg-gold-400 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300 ease-out"></div>
+            <Link to="/booking" className="w-full md:w-auto">
+              <button className="w-full md:w-16 h-16 rounded-2xl bg-black flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-md group">
+                <ArrowRight className="w-6 h-6 text-white group-hover:translate-x-1 transition-transform" />
               </button>
             </Link>
           </motion.div>
         </div>
       </section>
 
-      {/* 2. SERVICES SECTION - Asymmetric Modern Grid */}
-      <section className="py-24 md:py-32 bg-stone-950 relative border-b border-stone-800">
-        <div className="container mx-auto px-6">
-          <FadeIn>
-            <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
-              <div>
-                <h2 className="font-display font-black text-5xl md:text-7xl uppercase text-white tracking-tighter">Hizmetler</h2>
-                <div className="w-24 h-2 bg-gold-500 mt-4"></div>
-              </div>
-              <p className="font-sans text-stone-400 max-w-md font-medium text-lg">
-                Klasik berber algısını yıkıyoruz. İhtiyacın olan her şey, en keskin detaylarla tasarlandı.
-              </p>
-            </div>
-          </FadeIn>
+      {/* Reviews Section */}
+      <section className="py-32 px-6 bg-white mt-20 border-t border-black/5">
+        <div className="container mx-auto max-w-7xl">
+          <div className="text-center mb-16 space-y-4">
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-[#1D1D1F]">Müşterilerimizin Gözünden</h2>
+            <p className="text-gray-500 text-lg font-medium">Binlerce mutlu misafir, sıfır bekleme süresi.</p>
+          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8">
-            {loading ? (
-              <div className="col-span-12 flex justify-center py-20">
-                <div className="w-12 h-12 border-4 border-gold-500 border-t-transparent rounded-full animate-spin"></div>
-              </div>
-            ) : (
-              <>
-                {/* Featured Large Service */}
-                {services[0] && (
-                  <FadeIn className="md:col-span-7 group cursor-pointer" delay={0.1}>
-                    <div className="bg-stone-900 border border-stone-800 h-full p-8 md:p-12 relative overflow-hidden transition-colors hover:bg-stone-800">
-                      <div className="absolute top-0 right-0 w-64 h-64 bg-gold-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 group-hover:bg-gold-500/10 transition-colors"></div>
-                      <Scissors className="w-16 h-16 text-gold-500 mb-8 opacity-50 group-hover:opacity-100 transition-opacity" />
-                      <h3 className="font-display font-bold text-4xl md:text-5xl uppercase text-white mb-4">{services[0].name}</h3>
-                      <div className="flex items-end justify-between mt-12">
-                        <span className="font-sans font-bold text-stone-400 text-lg">{services[0].duration} Dakika</span>
-                        <span className="font-display font-black text-4xl text-gold-500">₺{services[0].price}</span>
-                      </div>
-                    </div>
-                  </FadeIn>
-                )}
-
-                {/* Right Stack Services */}
-                <div className="md:col-span-5 flex flex-col gap-6 md:gap-8">
-                  {services.slice(1, 3).map((service, idx) => (
-                    <FadeIn key={service.id} delay={0.2 + (idx * 0.1)} className="flex-1 group cursor-pointer">
-                      <div className="bg-stone-900 border border-stone-800 h-full p-8 relative overflow-hidden transition-colors hover:border-gold-500/50">
-                        <h3 className="font-display font-bold text-3xl uppercase text-white mb-2 group-hover:text-gold-500 transition-colors">{service.name}</h3>
-                        <div className="flex items-center gap-4 mt-6">
-                          <span className="bg-stone-950 border border-stone-800 px-4 py-2 font-sans font-bold text-sm text-stone-300">{service.duration} Dk</span>
-                          <span className="font-display font-black text-2xl text-white">₺{service.price}</span>
-                        </div>
-                      </div>
-                    </FadeIn>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {REVIEWS.map((review, idx) => (
+              <motion.div 
+                key={review.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: idx * 0.1 }}
+                className="p-8 rounded-[2rem] bg-[#FAFAFA] border border-black/5 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all flex flex-col h-full"
+              >
+                <div className="flex space-x-1 mb-6">
+                  {[...Array(review.rating)].map((_, i) => (
+                    <Star key={i} className="w-5 h-5 fill-black text-black" />
                   ))}
                 </div>
-
-                {/* Bottom Wide Services */}
-                {services.slice(3, 5).map((service, idx) => (
-                  <FadeIn key={service.id} delay={0.4 + (idx * 0.1)} className="md:col-span-6 group cursor-pointer">
-                    <div className="bg-stone-900/50 border border-stone-800 h-full p-8 flex items-center justify-between hover:bg-gold-500 hover:border-gold-500 transition-all">
-                      <div>
-                        <h3 className="font-display font-bold text-2xl uppercase text-white group-hover:text-stone-950">{service.name}</h3>
-                        <span className="font-sans font-medium text-stone-500 group-hover:text-stone-800 block mt-1">{service.duration} Dk</span>
-                      </div>
-                      <span className="font-display font-black text-3xl text-gold-500 group-hover:text-stone-950">₺{service.price}</span>
-                    </div>
-                  </FadeIn>
-                ))}
-              </>
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* 3. BARBERS SECTION - Horizontal Scroll */}
-      <section className="py-24 md:py-32 bg-stone-900 overflow-hidden">
-        <div className="container mx-auto px-6 mb-16">
-          <FadeIn>
-            <h2 className="font-display font-black text-5xl md:text-7xl uppercase text-white tracking-tighter">Ekibimiz</h2>
-            <div className="w-24 h-2 bg-gold-500 mt-4"></div>
-          </FadeIn>
-        </div>
-
-        {/* Carousel Container */}
-        <div className="w-full px-6 md:px-12">
-          <div className="flex gap-8 overflow-x-auto pb-12 snap-x snap-mandatory scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-            {barbers.map((barber, idx) => (
-              <FadeIn key={barber.id} delay={idx * 0.1} className="snap-center shrink-0">
-                <div className="w-[280px] md:w-[320px] flex flex-col items-center group">
-                  {/* Avatar */}
-                  <div className="w-48 h-48 md:w-56 md:h-56 rounded-full overflow-hidden mb-6 border-4 border-stone-800 group-hover:border-gold-500 transition-colors relative">
-                    <div className="absolute inset-0 bg-stone-800 flex items-center justify-center">
-                      {/* Fallback avatar if no image */}
-                      <span className="font-display font-black text-6xl text-stone-700">{barber.name.charAt(0)}</span>
-                    </div>
-                    {/* Fake image for visual effect (Can be replaced with real avatar from DB later) */}
-                    <img 
-                      src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${barber.name}&backgroundColor=1c1917`} 
-                      alt={barber.name}
-                      className="w-full h-full object-cover relative z-10 grayscale group-hover:grayscale-0 transition-all duration-500"
-                    />
+                <p className="text-[#1D1D1F] text-[17px] font-medium leading-relaxed mb-8 flex-1">
+                  "{review.text}"
+                </p>
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                    <span className="font-semibold text-gray-600 text-sm">{review.name.charAt(0)}</span>
                   </div>
-                  
-                  <h3 className="font-display font-bold text-3xl uppercase text-white text-center">{barber.name}</h3>
-                  <div className="flex items-center justify-center gap-1 mt-2 text-gold-500">
-                    <Star className="w-4 h-4 fill-current" />
-                    <Star className="w-4 h-4 fill-current" />
-                    <Star className="w-4 h-4 fill-current" />
-                    <Star className="w-4 h-4 fill-current" />
-                    <Star className="w-4 h-4 fill-current" />
-                  </div>
-                  
-                  {/* Social Icons */}
-                  <div className="flex gap-4 mt-6">
-                    <a href="#" className="w-10 h-10 rounded-full bg-stone-800 flex items-center justify-center text-stone-400 hover:bg-gold-500 hover:text-stone-950 transition-colors">
-                      <Instagram className="w-4 h-4" />
-                    </a>
-                    <a href="#" className="w-10 h-10 rounded-full bg-stone-800 flex items-center justify-center text-stone-400 hover:bg-gold-500 hover:text-stone-950 transition-colors">
-                      <Twitter className="w-4 h-4" />
-                    </a>
-                  </div>
+                  <span className="font-semibold text-sm text-gray-500">{review.name}</span>
                 </div>
-              </FadeIn>
+              </motion.div>
             ))}
           </div>
         </div>
-      </section>
-
-      {/* Booking CTA Banner */}
-      <section className="bg-gold-500 py-20 px-6 text-center">
-        <FadeIn>
-          <h2 className="font-display font-black text-4xl md:text-6xl uppercase text-stone-950 tracking-tighter mb-8">
-            BEKLEMEK SİZE GÖRE DEĞİL Mİ?
-          </h2>
-          <Link to="/booking">
-            <button className="bg-stone-950 text-white font-sans font-bold uppercase tracking-widest px-10 py-5 hover:bg-stone-800 transition-colors shadow-2xl">
-              Randevunu Hemen Al
-            </button>
-          </Link>
-        </FadeIn>
       </section>
 
     </div>
